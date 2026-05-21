@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       orderId: order.id,
       paymentMethod,
       total,
-      upiId: process.env.UPI_ID || "9951487200@paytm",
+      upiId: process.env.UPI_ID || "9346032643-3@ibl",
       upiName: "Vijay Copier Solutions",
     });
   }
