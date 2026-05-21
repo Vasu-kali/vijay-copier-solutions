@@ -122,10 +122,7 @@ function LoginForm() {
             </button>
           </form>
 
-          <div style={{ textAlign: "center", marginTop: "2rem", padding: "1.25rem", background: "var(--bg-card)", borderRadius: "var(--radius-lg)", border: "1px solid var(--border-color)", fontSize: "0.8125rem" }}>
-            <strong>Demo Admin:</strong> admin@vijaycopiersolutions.com / admin123<br />
-            <strong>Demo User:</strong> Register a new account
-          </div>
+
         </div>
       </div>
 
