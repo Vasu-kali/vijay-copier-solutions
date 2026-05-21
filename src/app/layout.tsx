@@ -18,6 +18,9 @@ export const metadata: Metadata = {
     description: "India's most trusted destination for premium Xerox & copier machines.",
   },
   robots: { index: true, follow: true },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "93W2TyqzQHEd11Z32kKdkG02hiToVHB1ri9io29lu14",
+  },
 };
 
 export const viewport: Viewport = {
