@@ -14,7 +14,7 @@ const schema = z.object({
   brand: z.string().default("Xerox"),
   categoryId: z.string(),
   images: z.array(z.string()).default([]),
-  specifications: z.record(z.string()).default({}),
+  specifications: z.record(z.string(), z.unknown()).default({}),
   featured: z.boolean().default(false),
   isActive: z.boolean().default(true),
 });
