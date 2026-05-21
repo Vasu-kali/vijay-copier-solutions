@@ -8,16 +8,20 @@ import toast from "react-hot-toast";
 
 const STATUS_STEPS = ["PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED"];
 
-export default function OrderDetailPage({ params }: { params: { id: string } }) {
+export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const success = searchParams.get("success");
+  const [orderId, setOrderId] = useState<string>("");
 
   useEffect(() => {
-    if (success) toast.success("Payment successful! Your order is confirmed.");
-    fetch(`/api/orders/${params.id}`).then(r => r.json()).then(data => { setOrder(data); setLoading(false); }).catch(() => setLoading(false));
-  }, [params.id]);
+    params.then(({ id }) => {
+      setOrderId(id);
+      if (success) toast.success("Payment successful! Your order is confirmed.");
+      fetch(`/api/orders/${id}`).then(r => r.json()).then(data => { setOrder(data); setLoading(false); }).catch(() => setLoading(false));
+    });
+  }, []);
 
   if (loading) return <div style={{ display: "flex", justifyContent: "center", padding: "5rem" }}><Loader2 size={36} style={{ color: "var(--accent-primary)", animation: "spin 1s linear infinite" }} /></div>;
   if (!order || order.error) return <div style={{ textAlign: "center", padding: "4rem", color: "var(--text-muted)" }}>Order not found.</div>;
