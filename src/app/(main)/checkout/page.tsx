@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useCartStore } from "@/store/cart";
 import { formatPrice } from "@/lib/utils";
@@ -39,7 +39,7 @@ declare global {
   interface Window { Razorpay: any; }
 }
 
-export default function CheckoutPage() {
+function CheckoutPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const { items, total, clearCart } = useCartStore();
@@ -381,5 +381,13 @@ export default function CheckoutPage() {
       </div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } } @media(max-width:768px){.checkout-grid{grid-template-columns:1fr!important}}`}</style>
     </>
+  );
+}
+
+export default function CheckoutPageWrapper() {
+  return (
+    <Suspense fallback={<div style={{ display: "flex", justifyContent: "center", padding: "8rem 0" }}><Loader2 size={40} style={{ color: "var(--accent-primary)", animation: "spin 1s linear infinite" }} /><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>}>
+      <CheckoutPage />
+    </Suspense>
   );
 }

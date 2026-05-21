@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { formatPrice, formatDate, getOrderStatusColor } from "@/lib/utils";
 import Link from "next/link";
 import { Loader2, Package, Truck, Check, Clock } from "lucide-react";
@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 
 const STATUS_STEPS = ["PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED"];
 
-export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+function OrderDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
@@ -136,5 +136,13 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
       </div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
+  );
+}
+
+export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  return (
+    <Suspense fallback={<div style={{ display: "flex", justifyContent: "center", padding: "5rem" }}><Loader2 size={36} style={{ color: "var(--accent-primary)", animation: "spin 1s linear infinite" }} /><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>}>
+      <OrderDetailContent params={params} />
+    </Suspense>
   );
 }

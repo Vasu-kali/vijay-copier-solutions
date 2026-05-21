@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import ProductCard from "@/components/ProductCard";
-import { Search, SlidersHorizontal, ChevronDown, X, Loader2 } from "lucide-react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { Search, SlidersHorizontal, X, Loader2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 const SORT_OPTIONS = [
   { value: "newest", label: "Newest First" },
@@ -21,8 +21,7 @@ const CATEGORIES = [
   { slug: "eco", label: "Eco Range" },
 ];
 
-export default function ProductsPage() {
-  const router = useRouter();
+function ProductsContent() {
   const searchParams = useSearchParams();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,7 +55,6 @@ export default function ProductsPage() {
       if (filters.featured) params.set("featured", "true");
       params.set("page", String(pg));
       params.set("limit", "12");
-
       const res = await fetch(`/api/products?${params}`);
       const data = await res.json();
       setProducts(data.products || []);
@@ -91,27 +89,17 @@ export default function ProductsPage() {
           <div style={{ position: "relative", flex: 1, minWidth: 200 }}>
             <Search size={16} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
             <input
-              type="search"
-              className="input"
-              style={{ paddingLeft: "2.5rem" }}
+              type="search" className="input" style={{ paddingLeft: "2.5rem" }}
               placeholder="Search machines..."
               value={filters.search}
               onChange={e => setFilters(f => ({ ...f, search: e.target.value }))}
             />
           </div>
-
-          <select
-            className="input"
-            style={{ width: "auto", minWidth: 180 }}
-            value={filters.sort}
-            onChange={e => setFilters(f => ({ ...f, sort: e.target.value }))}
-          >
+          <select className="input" style={{ width: "auto", minWidth: 180 }} value={filters.sort} onChange={e => setFilters(f => ({ ...f, sort: e.target.value }))}>
             {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
-
           <button onClick={() => setFiltersOpen(!filtersOpen)} className="btn btn-secondary" style={{ position: "relative" }}>
-            <SlidersHorizontal size={16} />
-            Filters
+            <SlidersHorizontal size={16} /> Filters
             {activeFilters > 0 && <span className="badge badge-blue" style={{ position: "absolute", top: -8, right: -8 }}>{activeFilters}</span>}
           </button>
         </div>
@@ -119,18 +107,10 @@ export default function ProductsPage() {
         {/* Active filters */}
         {activeFilters > 0 && (
           <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "1rem" }}>
-            {filters.search && <span className="badge badge-blue" style={{ cursor: "pointer", gap: 4 }} onClick={() => clearFilter("search")}>
-              Search: {filters.search} <X size={12} />
-            </span>}
-            {filters.category && <span className="badge badge-blue" style={{ cursor: "pointer", gap: 4 }} onClick={() => clearFilter("category")}>
-              Category: {CATEGORIES.find(c => c.slug === filters.category)?.label} <X size={12} />
-            </span>}
-            {filters.featured && <span className="badge badge-gold" style={{ cursor: "pointer", gap: 4 }} onClick={() => clearFilter("featured")}>
-              Featured only <X size={12} />
-            </span>}
-            <button onClick={() => setFilters({ search: "", category: "", sort: "newest", minPrice: "", maxPrice: "", featured: false })} className="btn btn-ghost btn-sm" style={{ fontSize: "0.75rem" }}>
-              Clear All
-            </button>
+            {filters.search && <span className="badge badge-blue" style={{ cursor: "pointer" }} onClick={() => clearFilter("search")}>Search: {filters.search} <X size={12} /></span>}
+            {filters.category && <span className="badge badge-blue" style={{ cursor: "pointer" }} onClick={() => clearFilter("category")}>Category: {CATEGORIES.find(c => c.slug === filters.category)?.label} <X size={12} /></span>}
+            {filters.featured && <span className="badge badge-gold" style={{ cursor: "pointer" }} onClick={() => clearFilter("featured")}>Featured only <X size={12} /></span>}
+            <button onClick={() => setFilters({ search: "", category: "", sort: "newest", minPrice: "", maxPrice: "", featured: false })} className="btn btn-ghost btn-sm" style={{ fontSize: "0.75rem" }}>Clear All</button>
           </div>
         )}
 
@@ -143,9 +123,7 @@ export default function ProductsPage() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
                   <button onClick={() => setFilters(f => ({ ...f, category: "" }))} className={`btn btn-sm ${!filters.category ? "btn-primary" : "btn-ghost"}`} style={{ justifyContent: "flex-start" }}>All Categories</button>
                   {CATEGORIES.map(cat => (
-                    <button key={cat.slug} onClick={() => setFilters(f => ({ ...f, category: cat.slug }))} className={`btn btn-sm ${filters.category === cat.slug ? "btn-primary" : "btn-ghost"}`} style={{ justifyContent: "flex-start" }}>
-                      {cat.label}
-                    </button>
+                    <button key={cat.slug} onClick={() => setFilters(f => ({ ...f, category: cat.slug }))} className={`btn btn-sm ${filters.category === cat.slug ? "btn-primary" : "btn-ghost"}`} style={{ justifyContent: "flex-start" }}>{cat.label}</button>
                   ))}
                 </div>
               </div>
@@ -159,9 +137,7 @@ export default function ProductsPage() {
               </div>
               <div>
                 <label style={{ fontWeight: 600, fontSize: "0.875rem", marginBottom: "0.75rem", display: "block" }}>Special</label>
-                <button onClick={() => setFilters(f => ({ ...f, featured: !f.featured }))} className={`btn btn-sm ${filters.featured ? "btn-gold" : "btn-secondary"}`}>
-                  ⭐ Featured Only
-                </button>
+                <button onClick={() => setFilters(f => ({ ...f, featured: !f.featured }))} className={`btn btn-sm ${filters.featured ? "btn-gold" : "btn-secondary"}`}>⭐ Featured Only</button>
               </div>
             </div>
           </div>
@@ -177,9 +153,7 @@ export default function ProductsPage() {
             <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🔍</div>
             <h3 style={{ fontWeight: 700, marginBottom: "0.5rem" }}>No products found</h3>
             <p style={{ marginBottom: "1.5rem" }}>Try adjusting your search or filters</p>
-            <button onClick={() => setFilters({ search: "", category: "", sort: "newest", minPrice: "", maxPrice: "", featured: false })} className="btn btn-primary">
-              Clear Filters
-            </button>
+            <button onClick={() => setFilters({ search: "", category: "", sort: "newest", minPrice: "", maxPrice: "", featured: false })} className="btn btn-primary">Clear Filters</button>
           </div>
         ) : (
           <>
@@ -192,8 +166,6 @@ export default function ProductsPage() {
                 />
               ))}
             </div>
-
-            {/* Pagination */}
             {pages > 1 && (
               <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", marginTop: "3rem", flexWrap: "wrap" }}>
                 <button onClick={() => fetchProducts(page - 1)} disabled={page === 1} className="btn btn-secondary btn-sm">← Prev</button>
@@ -211,3 +183,16 @@ export default function ProductsPage() {
   );
 }
 
+// Wrap in Suspense — required by Next.js when using useSearchParams
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ display: "flex", justifyContent: "center", padding: "8rem 0" }}>
+        <Loader2 size={40} style={{ color: "var(--accent-primary)", animation: "spin 1s linear infinite" }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    }>
+      <ProductsContent />
+    </Suspense>
+  );
+}
