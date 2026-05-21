@@ -1,7 +1,10 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+const DATABASE_URL = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_8zHJiKbqpj0B@ep-sweet-hat-aq79y8c3-pooler.c-8.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+const adapter = new PrismaPg({ connectionString: DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 
 const IMAGES = {
